@@ -6,7 +6,9 @@ export default function Layout() {
     return (
         <>
             <Navbar />
-            <Outlet />
+            <main className="min-h-screen bg-gray-50 py-4 px-4">
+                <Outlet />
+            </main>
             <Footer />
         </>
     )
