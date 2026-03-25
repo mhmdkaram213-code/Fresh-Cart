@@ -7,8 +7,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema } from '../../schema/AuthSchema/LoginSchema';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
+  const { login } = useAuth();
   const [apiError, setApiError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -27,8 +29,8 @@ export default function Login() {
       });
 
       if (response.data.message === 'success') {
-        // Here you would typically save the token from response.data.token
-        // localStorage.setItem('token', response.data.token);
+        console.log(response.data) // debug: see full response
+        login(response.data.token, response.data.user);
         navigate('/'); // Navigating to home
       }
     } catch (error) {
@@ -187,8 +189,8 @@ export default function Login() {
                 type="submit"
                 disabled={!isValid || isSubmitting}
                 className={`w-full py-3.5 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.1)] text-sm font-medium text-white transition-all duration-200 flex justify-center items-center ${!isValid || isSubmitting
-                    ? 'bg-gray-400 cursor-not-allowed shadow-none'
-                    : 'bg-primary-600 hover:bg-primary-700 hover:shadow-[0_6px_20px_rgba(22,163,74,0.23)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transform hover:-translate-y-0.5'
+                  ? 'bg-gray-400 cursor-not-allowed shadow-none'
+                  : 'bg-primary-600 hover:bg-primary-700 hover:shadow-[0_6px_20px_rgba(22,163,74,0.23)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transform hover:-translate-y-0.5'
                   }`}
               >
                 {isSubmitting ? (

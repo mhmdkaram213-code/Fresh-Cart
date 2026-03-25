@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faPhone,
@@ -13,38 +14,16 @@ import {
     faArrowRightFromBracket,
     faBars,
     faXmark,
-    faHouse,
-    faClockRotateLeft,
-    faStar,
-    faTag,
     faBuilding,
-    // Category Icons
-    faLaptop,
-    faShirt,
-    faPersonDress,
-    faBaby,
-    faSpa,
-    faDumbbell,
-    faCouch,
-    faBasketShopping,
-    faCar,
-    faBook
+    faHouse,
+    faLayerGroup,
+    faList,
 } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regHeart, faUser as regUser } from '@fortawesome/free-regular-svg-icons';
 import logo from '../../assets/images/freshcart-logo.svg';
+import { categories } from '../../data/categories';
 
-const categories = [
-    { name: "Electronics", icon: faLaptop, path: "/categories/electronics" },
-    { name: "Men's Fashion", icon: faShirt, path: "/categories/mens-fashion" },
-    { name: "Women's Fashion", icon: faPersonDress, path: "/categories/womens-fashion" },
-    { name: "Baby & Toys", icon: faBaby, path: "/categories/baby-toys" },
-    { name: "Beauty & Health", icon: faSpa, path: "/categories/beauty-health" },
-    { name: "Sports", icon: faDumbbell, path: "/categories/sports" },
-    { name: "Home & Garden", icon: faCouch, path: "/categories/home-garden" },
-    { name: "Grocery", icon: faBasketShopping, path: "/categories/grocery" },
-    { name: "Automotive", icon: faCar, path: "/categories/automotive" },
-    { name: "Books", icon: faBook, path: "/categories/books" },
-];
+
 
 const CategoryDropdown = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -124,7 +103,7 @@ const TopBar = () => (
     </div>
 );
 
-const MainNav = ({ setIsMenuOpen }) => (
+const MainNav = ({ setIsMenuOpen, token, setShowLogoutModal }) => (
     <div className="py-4 bg-white shadow-sm sticky top-0 lg:static z-40">
         <div className="container mx-auto px-4 flex items-center justify-between gap-4 md:gap-8">
             <NavLink to="/" className="shrink-0 transform hover:scale-105 transition-transform duration-200">
@@ -146,44 +125,52 @@ const MainNav = ({ setIsMenuOpen }) => (
             <div className="flex items-center gap-4">
                 {/* DESKTOP ONLY — hide on mobile */}
                 <div className="hidden md:flex items-center gap-4">
-                    {/* Wishlist */}
-                    <NavLink to="/wishlist" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
-                        <FontAwesomeIcon icon={regHeart} className="text-xl" />
-                        <span className="text-xs">Wishlist</span>
-                    </NavLink>
+                    {token ? (
+                        <>
+                            {/* Wishlist */}
+                            <NavLink to="/wishlist" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
+                                <FontAwesomeIcon icon={regHeart} className="text-xl" />
+                                <span className="text-xs">Wishlist</span>
+                            </NavLink>
 
-                    {/* Account */}
-                    <NavLink to="/account" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
-                        <FontAwesomeIcon icon={regUser} className="text-xl" />
-                        <span className="text-xs">Account</span>
-                    </NavLink>
+                            {/* Account */}
+                            <NavLink to="/account" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
+                                <FontAwesomeIcon icon={regUser} className="text-xl" />
+                                <span className="text-xs">Account</span>
+                            </NavLink>
 
-                    {/* Signup */}
-                    <NavLink to="/signup" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
-                        <FontAwesomeIcon icon={faUserPlus} className="text-xl" />
-                        <span className="text-xs text-primary-600 font-semibold">Signup</span>
-                    </NavLink>
+                            {/* Logout */}
+                            <button onClick={() => setShowLogoutModal(true)} className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200 bg-transparent border-none">
+                                <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-xl" />
+                                <span className="text-xs">Logout</span>
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            {/* Signup */}
+                            <NavLink to="/signup" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
+                                <FontAwesomeIcon icon={faUserPlus} className="text-xl" />
+                                <span className="text-xs text-primary-600 font-semibold">Signup</span>
+                            </NavLink>
 
-                    {/* Login */}
-                    <NavLink to="/login" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
-                        <FontAwesomeIcon icon={faRightToBracket} className="text-xl" />
-                        <span className="text-xs">Login</span>
-                    </NavLink>
-
-                    {/* Logout */}
-                    <NavLink to="/logout" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
-                        <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-xl" />
-                        <span className="text-xs">Logout</span>
-                    </NavLink>
+                            {/* Login */}
+                            <NavLink to="/login" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
+                                <FontAwesomeIcon icon={faRightToBracket} className="text-xl" />
+                                <span className="text-xs">Login</span>
+                            </NavLink>
+                        </>
+                    )}
                 </div>
 
                 {/* ALWAYS VISIBLE — Cart (mobile + desktop) */}
                 <NavLink to="/cart" className="flex flex-col items-center gap-0.5 relative text-gray-600 hover:text-primary-600 transition-colors duration-200">
                     <div className="relative">
                         <FontAwesomeIcon icon={faCartShopping} className="text-xl" />
-                        <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                            3
-                        </span>
+                        {token && (
+                            <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                                3
+                            </span>
+                        )}
                     </div>
                     <span className="text-xs hidden md:block">Cart</span>
                 </NavLink>
@@ -215,17 +202,16 @@ const CategoryNav = () => {
 
                 <nav className="flex items-center ml-8 space-x-10">
                     <NavLink to="/" end className={navLinkClass}>Home</NavLink>
-                    <NavLink to="/recently-added" className={navLinkClass}>Recently Added</NavLink>
-                    <NavLink to="/featured-products" className={navLinkClass}>Featured Products</NavLink>
-                    <NavLink to="/offers" className={navLinkClass}>Offers & Deals</NavLink>
                     <NavLink to="/brands" className={navLinkClass}>Brands</NavLink>
+                    <NavLink to="/categories" className={navLinkClass}>Categories</NavLink>
+                    <NavLink to="/subcategories" className={navLinkClass}>SubCategories</NavLink>
                 </nav>
             </div>
         </div>
     );
 };
 
-const MobileSidebar = ({ isOpen, setIsOpen }) => (
+const MobileSidebar = ({ isOpen, setIsOpen, token, setShowLogoutModal }) => (
     <div className={`fixed inset-0 z-[100] transition-opacity duration-300 lg:hidden ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsOpen(false)}></div>
         <div className={`absolute top-0 left-0 h-full w-4/5 max-w-sm bg-white shadow-2xl p-6 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
@@ -247,36 +233,40 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => (
                         <FontAwesomeIcon icon={faHouse} className="w-5 text-primary-600" />
                         Home
                     </NavLink>
-                    <NavLink to="/recently-added" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-800 font-bold hover:text-primary-600 p-2 rounded-lg hover:bg-primary-50">
-                        <FontAwesomeIcon icon={faClockRotateLeft} className="w-5 text-primary-600" />
-                        Recently Added
-                    </NavLink>
-                    <NavLink to="/featured-products" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-800 font-bold hover:text-primary-600 p-2 rounded-lg hover:bg-primary-50">
-                        <FontAwesomeIcon icon={faStar} className="w-5 text-primary-600" />
-                        Featured
-                    </NavLink>
-                    <NavLink to="/offers" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-800 font-bold hover:text-primary-600 p-2 rounded-lg hover:bg-primary-50">
-                        <FontAwesomeIcon icon={faTag} className="w-5 text-primary-600" />
-                        Offers
-                    </NavLink>
                     <NavLink to="/brands" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-800 font-bold hover:text-primary-600 p-2 rounded-lg hover:bg-primary-50">
                         <FontAwesomeIcon icon={faBuilding} className="w-5 text-primary-600" />
                         Brands
                     </NavLink>
+                    <NavLink to="/categories" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-800 font-bold hover:text-primary-600 p-2 rounded-lg hover:bg-primary-50">
+                        <FontAwesomeIcon icon={faLayerGroup} className="w-5 text-primary-600" />
+                        Categories
+                    </NavLink>
+                    <NavLink to="/subcategories" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-800 font-bold hover:text-primary-600 p-2 rounded-lg hover:bg-primary-50">
+                        <FontAwesomeIcon icon={faList} className="w-5 text-primary-600" />
+                        SubCategories
+                    </NavLink>
                 </nav>
 
-                <div className="pt-6 border-t flex flex-col space-y-3">
-                    <NavLink to="/account" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-600 font-medium p-2 hover:bg-gray-50 rounded-lg">
-                        <FontAwesomeIcon icon={regUser} className="w-5" /> Account
-                    </NavLink>
-                    <NavLink to="/wishlist" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-600 font-medium p-2 hover:bg-gray-50 rounded-lg">
-                        <FontAwesomeIcon icon={regHeart} className="w-5" /> Wishlist
-                    </NavLink>
-                </div>
+                {token && (
+                    <div className="pt-6 border-t flex flex-col space-y-3">
+                        <NavLink to="/account" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-600 font-medium p-2 hover:bg-gray-50 rounded-lg">
+                            <FontAwesomeIcon icon={regUser} className="w-5" /> Account
+                        </NavLink>
+                        <NavLink to="/wishlist" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-600 font-medium p-2 hover:bg-gray-50 rounded-lg">
+                            <FontAwesomeIcon icon={regHeart} className="w-5" /> Wishlist
+                        </NavLink>
+                    </div>
+                )}
 
                 <div className="pt-6 border-t grid grid-cols-2 gap-3">
-                    <NavLink to="/login" onClick={() => setIsOpen(false)} className="text-center py-2.5 bg-gray-100 font-bold rounded-xl text-gray-600">Login</NavLink>
-                    <NavLink to="/signup" onClick={() => setIsOpen(false)} className="text-center py-2.5 bg-primary-600 font-bold rounded-xl text-white shadow-lg">Signup</NavLink>
+                    {token ? (
+                        <button onClick={() => { setIsOpen(false); setShowLogoutModal(true); }} className="col-span-2 text-center py-2.5 bg-gray-100 font-bold rounded-xl text-gray-600 hover:bg-gray-200">Logout</button>
+                    ) : (
+                        <>
+                            <NavLink to="/login" onClick={() => setIsOpen(false)} className="text-center py-2.5 bg-gray-100 font-bold rounded-xl text-gray-600">Login</NavLink>
+                            <NavLink to="/signup" onClick={() => setIsOpen(false)} className="text-center py-2.5 bg-primary-600 font-bold rounded-xl text-white shadow-lg">Signup</NavLink>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
@@ -285,6 +275,9 @@ const MobileSidebar = ({ isOpen, setIsOpen }) => (
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { token, logout } = useAuth();
+    const navigate = useNavigate();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     // Disable scroll when mobile menu is open
     useEffect(() => {
@@ -298,9 +291,41 @@ export default function Navbar() {
     return (
         <header className="w-full relative">
             <TopBar />
-            <MainNav setIsMenuOpen={setIsMenuOpen} />
+            <MainNav setIsMenuOpen={setIsMenuOpen} token={token} setShowLogoutModal={setShowLogoutModal} />
             <CategoryNav />
-            <MobileSidebar isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
+            <MobileSidebar isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} token={token} setShowLogoutModal={setShowLogoutModal} />
+
+            {showLogoutModal && (
+                <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-xl p-6 shadow-xl w-80 text-center animate-fadeIn">
+                        <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-3xl text-primary-600 mb-3" />
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                            Logout?
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-5">
+                            Are you sure you want to logout?
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowLogoutModal(false)}
+                                className="flex-1 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    logout()
+                                    setShowLogoutModal(false)
+                                    navigate('/login')
+                                }}
+                                className="flex-1 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors font-medium"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </header>
     );
 }

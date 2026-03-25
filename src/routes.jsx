@@ -1,4 +1,6 @@
 import Layout from "./components/Layout/Layout"
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute"
+import PublicOnlyRoute from "./components/PublicOnlyRoute/PublicOnlyRoute"
 import Home from "./pages/Home/Home"
 import Login from "./auth/Login/Login"
 import Register from "./auth/Register/Register"
@@ -15,9 +17,7 @@ import SearshProducts from "./pages/SearshProducts/SearshProducts"
 import Favorites from "./pages/Favorites/Favorites"
 import NotFound from "./pages/NotFound/NotFound"
 import Account from "./pages/Account/Account"
-import RecentlyAdded from "./pages/RecentlyAdded/RecentlyAdded"
-import FeaturedProducts from "./pages/FeaturedProducts/FeaturedProducts"
-import Offers from "./pages/Offers/Offers"
+import SubCategories from "./pages/SubCategories/SubCategories"
 import CategoryDetail from "./pages/CategoryDetail/CategoryDetail"
 import PlaceholderPage from "./pages/Placeholder/Placeholder"
 
@@ -27,26 +27,24 @@ export const routes = [
         element: <Layout />,
         children: [
             { index: true, element: <Home /> },
-            { path: '/login', element: <Login /> },
-            { path: '/signup', element: <Register /> }, // Matched Navbar /signup
-            { path: '/register', element: <Register /> }, // Keep fallback
-            { path: '/cart', element: <Cart /> },
+            { path: '/login', element: <PublicOnlyRoute><Login /></PublicOnlyRoute> },
+            { path: '/signup', element: <PublicOnlyRoute><Register /></PublicOnlyRoute> }, // Matched Navbar /signup
+            { path: '/register', element: <PublicOnlyRoute><Register /></PublicOnlyRoute> }, // Keep fallback
+            { path: '/cart', element: <ProtectedRoute><Cart /></ProtectedRoute> },
             { path: '/brands', element: <Brands /> },
-            { path: '/recently-added', element: <RecentlyAdded /> },
-            { path: '/featured-products', element: <FeaturedProducts /> },
-            { path: '/offers', element: <Offers /> },
+            { path: '/subcategories', element: <SubCategories /> },
             { path: '/categories', element: <Categories /> },
             { path: '/categories/:categoryName', element: <CategoryDetail /> },
-            { path: '/verfiyEmail', element: <VerfiyEmail /> },
-            { path: '/product/:id', element: <ProductDetails /> },
-            { path: '/checkOut', element: <CheckOut /> },
-            { path: '/orders', element: <Orders /> },
-            { path: '/forgetPassword', element: <ForgetPassword /> },
-            { path: '/wishlist', element: <WishList /> }, // Lowercase to match Navbar
-            { path: '/wishList', element: <WishList /> }, // Keep fallback
+            { path: '/verfiyEmail', element: <PublicOnlyRoute><VerfiyEmail /></PublicOnlyRoute> },
+            { path: '/product/:id', element: <ProtectedRoute><ProductDetails /></ProtectedRoute> },
+            { path: '/checkOut', element: <ProtectedRoute><CheckOut /></ProtectedRoute> },
+            { path: '/orders', element: <ProtectedRoute><Orders /></ProtectedRoute> },
+            { path: '/forgetPassword', element: <PublicOnlyRoute><ForgetPassword /></PublicOnlyRoute> },
+            { path: '/wishlist', element: <ProtectedRoute><WishList /></ProtectedRoute> }, // Lowercase to match Navbar
+            { path: '/wishList', element: <ProtectedRoute><WishList /></ProtectedRoute> }, // Keep fallback
             { path: '/searshProducts', element: <SearshProducts /> },
-            { path: '/favorites', element: <Favorites /> },
-            { path: '/account', element: <Account /> },
+            { path: '/favorites', element: <ProtectedRoute><Favorites /></ProtectedRoute> },
+            { path: '/account', element: <ProtectedRoute><Account /></ProtectedRoute> },
             { path: '/logout', element: <PlaceholderPage /> }, // Added logout placeholder
             // Info & Customer Service Placeholders
             { path: '/track-order', element: <PlaceholderPage /> },

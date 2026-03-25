@@ -6,8 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faLock, faPhone, faSpinner, faLeaf, faTruckFast, faShieldHalved, faAppleWhole } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { registerSchema } from '../../schema/AuthSchema/RegisterSchema';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Register() {
+    const { login } = useAuth();
     const [apiError, setApiError] = useState(null);
     const navigate = useNavigate();
 
@@ -28,7 +30,9 @@ export default function Register() {
             });
 
             if (response.data.message === 'success') {
-                navigate('/login');
+                console.log(response.data) // debug: see full response
+                login(response.data.token, response.data.user);
+                navigate('/');
             }
         } catch (error) {
             setApiError(error.response?.data?.message || 'An error occurred during registration');
