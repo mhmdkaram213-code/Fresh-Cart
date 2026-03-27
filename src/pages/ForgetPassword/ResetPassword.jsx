@@ -1,39 +1,68 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEnvelope, faSpinner, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faLock, faSpinner, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 
 const BASE = 'https://ecommerce.routemisr.com/api/v1'
 
 const schema = z.object({
-  email: z.string().email('Invalid email address')
+  email: z.string().email(),
+  newPassword: z.string().min(6, 'Password must be at least 6 characters')
 })
 
-export default function ForgetPassword() {
+export default function ResetPassword() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const navigate = useNavigate()
+  const email = localStorage.getItem('resetEmail')
 
   const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(schema)
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: email || ''
+    }
   })
 
   async function onSubmit(data) {
     setLoading(true)
     setError('')
     try {
-      await axios.post(`${BASE}/auth/forgotPasswords`, data)
-      localStorage.setItem('resetEmail', data.email)
-      navigate('/verify-reset-code')
+      await axios.put(`${BASE}/auth/resetPassword`, data)
+      setSuccess(true)
+      localStorage.removeItem('resetEmail')
+      setTimeout(() => {
+        navigate('/login')
+      }, 2000)
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send reset code')
+      setError(err.response?.data?.message || 'Failed to reset password')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center px-4 bg-gray-50">
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 p-10 text-center animate-fadeIn">
+          <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <FontAwesomeIcon icon={faCheckCircle} className="text-4xl" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Success!</h1>
+          <p className="text-gray-500 mb-8">
+            Your password has been reset successfully. <br/>
+            Redirecting you to login...
+          </p>
+          <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+            <div className="bg-green-500 h-full animate-progress"></div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -42,11 +71,11 @@ export default function ForgetPassword() {
         
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />
+            <FontAwesomeIcon icon={faLock} className="text-2xl" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Forgot Password?</h1>
-          <p className="text-gray-500 mt-2 text-sm leading-relaxed">
-            No worries! Enter your email address and we'll send you a 6-digit code to reset your password.
+          <h1 className="text-2xl font-bold text-gray-900">New Password</h1>
+          <p className="text-gray-500 mt-2 text-sm">
+            Set a new, secure password for your account.
           </p>
         </div>
 
@@ -58,30 +87,32 @@ export default function ForgetPassword() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <input type="hidden" {...register('email')} />
+          
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              New Password
             </label>
             <div className="relative">
               <input
-                {...register('email')}
-                type="email"
-                placeholder="name@example.com"
+                {...register('newPassword')}
+                type="password"
+                placeholder="••••••••"
                 className={`w-full pl-12 pr-4 py-3 bg-gray-50 border rounded-xl focus:outline-none focus:ring-4 transition-all duration-300
-                  ${errors.email 
+                  ${errors.newPassword 
                     ? 'border-red-300 focus:ring-red-100 focus:border-red-400' 
                     : 'border-gray-200 focus:ring-primary-100 focus:border-primary-600'
                   }`}
               />
               <FontAwesomeIcon 
-                icon={faEnvelope} 
+                icon={faLock} 
                 className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors
-                  ${errors.email ? 'text-red-400' : 'text-gray-400'}`}
+                  ${errors.newPassword ? 'text-red-400' : 'text-gray-400'}`}
               />
             </div>
-            {errors.email && (
+            {errors.newPassword && (
               <p className="mt-1.5 text-xs text-red-500 font-medium">
-                {errors.email.message}
+                {errors.newPassword.message}
               </p>
             )}
           </div>
@@ -94,23 +125,13 @@ export default function ForgetPassword() {
             {loading ? (
               <>
                 <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-                Sending Code...
+                Resetting...
               </>
             ) : (
-              'Send Reset Code'
+              'Reset Password'
             )}
           </button>
         </form>
-
-        <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-          <Link 
-            to="/login" 
-            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-primary-600 transition-colors"
-          >
-            <FontAwesomeIcon icon={faArrowLeft} className="text-xs" />
-            Back to Login
-          </Link>
-        </div>
 
       </div>
     </div>

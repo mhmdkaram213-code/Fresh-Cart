@@ -1,22 +1,23 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEnvelope, faSpinner, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faShieldHeart, faSpinner, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
 const BASE = 'https://ecommerce.routemisr.com/api/v1'
 
 const schema = z.object({
-  email: z.string().email('Invalid email address')
+  resetCode: z.string().length(6, 'Reset code must be 6 digits')
 })
 
-export default function ForgetPassword() {
+export default function VerifyResetCode() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const email = localStorage.getItem('resetEmail')
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(schema)
@@ -26,11 +27,10 @@ export default function ForgetPassword() {
     setLoading(true)
     setError('')
     try {
-      await axios.post(`${BASE}/auth/forgotPasswords`, data)
-      localStorage.setItem('resetEmail', data.email)
-      navigate('/verify-reset-code')
+      await axios.post(`${BASE}/auth/verifyResetCode`, data)
+      navigate('/reset-password')
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send reset code')
+      setError(err.response?.data?.message || 'Invalid or expired code')
     } finally {
       setLoading(false)
     }
@@ -42,11 +42,12 @@ export default function ForgetPassword() {
         
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary-100 text-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <FontAwesomeIcon icon={faEnvelope} className="text-2xl" />
+            <FontAwesomeIcon icon={faShieldHeart} className="text-2xl" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Forgot Password?</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Verify Code</h1>
           <p className="text-gray-500 mt-2 text-sm leading-relaxed">
-            No worries! Enter your email address and we'll send you a 6-digit code to reset your password.
+            We've sent a 6-digit verification code to <br/>
+            <span className="font-semibold text-gray-900">{email || 'your email'}</span>
           </p>
         </div>
 
@@ -60,28 +61,22 @@ export default function ForgetPassword() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              Verification Code
             </label>
-            <div className="relative">
-              <input
-                {...register('email')}
-                type="email"
-                placeholder="name@example.com"
-                className={`w-full pl-12 pr-4 py-3 bg-gray-50 border rounded-xl focus:outline-none focus:ring-4 transition-all duration-300
-                  ${errors.email 
-                    ? 'border-red-300 focus:ring-red-100 focus:border-red-400' 
-                    : 'border-gray-200 focus:ring-primary-100 focus:border-primary-600'
-                  }`}
-              />
-              <FontAwesomeIcon 
-                icon={faEnvelope} 
-                className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors
-                  ${errors.email ? 'text-red-400' : 'text-gray-400'}`}
-              />
-            </div>
-            {errors.email && (
-              <p className="mt-1.5 text-xs text-red-500 font-medium">
-                {errors.email.message}
+            <input
+              {...register('resetCode')}
+              type="text"
+              placeholder="000000"
+              maxLength={6}
+              className={`w-full px-4 py-3 bg-gray-50 border text-center text-2xl tracking-[0.5em] font-bold rounded-xl focus:outline-none focus:ring-4 transition-all duration-300
+                ${errors.resetCode 
+                  ? 'border-red-300 focus:ring-red-100 focus:border-red-400' 
+                  : 'border-gray-200 focus:ring-primary-100 focus:border-primary-600'
+                }`}
+            />
+            {errors.resetCode && (
+              <p className="mt-1.5 text-xs text-red-500 font-medium text-center">
+                {errors.resetCode.message}
               </p>
             )}
           </div>
@@ -94,22 +89,22 @@ export default function ForgetPassword() {
             {loading ? (
               <>
                 <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-                Sending Code...
+                Verifying...
               </>
             ) : (
-              'Send Reset Code'
+              'Verify Code'
             )}
           </button>
         </form>
 
         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-          <Link 
-            to="/login" 
-            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-primary-600 transition-colors"
+          <button 
+            onClick={() => navigate('/forgot-password')}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-primary-600 transition-colors bg-transparent border-none"
           >
             <FontAwesomeIcon icon={faArrowLeft} className="text-xs" />
-            Back to Login
-          </Link>
+            Resend Email
+          </button>
         </div>
 
       </div>

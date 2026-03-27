@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faPhone,
@@ -18,6 +19,7 @@ import {
     faHouse,
     faLayerGroup,
     faList,
+    faListCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regHeart, faUser as regUser } from '@fortawesome/free-regular-svg-icons';
 import logo from '../../assets/images/freshcart-logo.svg';
@@ -103,7 +105,9 @@ const TopBar = () => (
     </div>
 );
 
-const MainNav = ({ setIsMenuOpen, token, setShowLogoutModal }) => (
+const MainNav = ({ setIsMenuOpen, token, setShowLogoutModal }) => {
+    const { cartCount } = useCart();
+    return (
     <div className="py-4 bg-white shadow-sm sticky top-0 lg:static z-40">
         <div className="container mx-auto px-4 flex items-center justify-between gap-4 md:gap-8">
             <NavLink to="/" className="shrink-0 transform hover:scale-105 transition-transform duration-200">
@@ -139,6 +143,12 @@ const MainNav = ({ setIsMenuOpen, token, setShowLogoutModal }) => (
                                 <span className="text-xs">Account</span>
                             </NavLink>
 
+                            {/* Orders */}
+                            <NavLink to="/allorders" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200">
+                                <FontAwesomeIcon icon={faListCheck} className="text-xl" />
+                                <span className="text-xs">Orders</span>
+                            </NavLink>
+
                             {/* Logout */}
                             <button onClick={() => setShowLogoutModal(true)} className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-primary-600 transition-colors duration-200 bg-transparent border-none">
                                 <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-xl" />
@@ -166,9 +176,9 @@ const MainNav = ({ setIsMenuOpen, token, setShowLogoutModal }) => (
                 <NavLink to="/cart" className="flex flex-col items-center gap-0.5 relative text-gray-600 hover:text-primary-600 transition-colors duration-200">
                     <div className="relative">
                         <FontAwesomeIcon icon={faCartShopping} className="text-xl" />
-                        {token && (
-                            <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                                3
+                        {cartCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-bounce">
+                                {cartCount}
                             </span>
                         )}
                     </div>
@@ -185,7 +195,8 @@ const MainNav = ({ setIsMenuOpen, token, setShowLogoutModal }) => (
             </div>
         </div>
     </div>
-);
+    );
+};
 
 const CategoryNav = () => {
     const navLinkClass = ({ isActive }) => `
@@ -254,6 +265,9 @@ const MobileSidebar = ({ isOpen, setIsOpen, token, setShowLogoutModal }) => (
                         </NavLink>
                         <NavLink to="/wishlist" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-600 font-medium p-2 hover:bg-gray-50 rounded-lg">
                             <FontAwesomeIcon icon={regHeart} className="w-5" /> Wishlist
+                        </NavLink>
+                        <NavLink to="/allorders" onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-gray-600 font-medium p-2 hover:bg-gray-50 rounded-lg">
+                            <FontAwesomeIcon icon={faListCheck} className="w-5" /> All Orders
                         </NavLink>
                     </div>
                 )}

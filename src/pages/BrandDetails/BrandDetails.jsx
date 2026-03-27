@@ -5,19 +5,19 @@ import ProductCard from '../../components/ProductCard'
 
 const BASE = 'https://ecommerce.routemisr.com/api/v1'
 
-export default function CategoryDetails() {
+export default function BrandDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [category, setCategory] = useState(null)
+  const [brand,    setBrand]    = useState(null)
   const [products, setProducts] = useState([])
   const [loading,  setLoading]  = useState(true)
 
   useEffect(() => {
     Promise.all([
-      axios.get(`${BASE}/categories/${id}`),
-      axios.get(`${BASE}/products?category=${id}&limit=20`)
-    ]).then(([catRes, productsRes]) => {
-      setCategory(catRes.data.data)
+      axios.get(`${BASE}/brands/${id}`),
+      axios.get(`${BASE}/products?brand=${id}&limit=20`)
+    ]).then(([brandRes, productsRes]) => {
+      setBrand(brandRes.data.data)
       setProducts(productsRes.data.data)
     }).finally(() => setLoading(false))
   }, [id])
@@ -37,15 +37,15 @@ export default function CategoryDetails() {
           <i className="fa-solid fa-arrow-left"></i> Back
         </button>
 
-        {category && (
+        {brand && (
           <div className="bg-white rounded-2xl border border-gray-100 
             shadow-sm p-6 mb-8 flex items-center gap-5">
-            <img src={category.image} alt={category.name}
+            <img src={brand.image} alt={brand.name}
               className="w-20 h-20 object-contain rounded-xl 
                 border border-gray-100 p-2" />
             <div>
               <h1 className="text-2xl font-bold text-gray-800">
-                {category.name}
+                {brand.name}
               </h1>
               <p className="text-gray-500 text-sm mt-1">
                 {products.length} products available
@@ -64,7 +64,7 @@ export default function CategoryDetails() {
         ) : (
           <div className="text-center py-20">
             <i className="fa-solid fa-box-open text-4xl text-gray-300 mb-3"></i>
-            <p className="text-gray-500">No products found for this category.</p>
+            <p className="text-gray-500">No products found for this brand.</p>
           </div>
         )}
       </div>
