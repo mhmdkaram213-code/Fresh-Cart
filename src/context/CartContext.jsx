@@ -9,11 +9,11 @@ const CartContext = createContext()
 export function CartProvider({ children }) {
   const { token } = useAuth()
 
-  const [cartItems,    setCartItems]    = useState([])
-  const [cartId,       setCartId]       = useState(null)
-  const [cartCount,    setCartCount]    = useState(0)
-  const [totalPrice,   setTotalPrice]   = useState(0)
-  const [cartLoading,  setCartLoading]  = useState(false)
+  const [cartItems, setCartItems] = useState([])
+  const [cartId, setCartId] = useState(null)
+  const [cartCount, setCartCount] = useState(0)
+  const [totalPrice, setTotalPrice] = useState(0)
+  const [cartLoading, setCartLoading] = useState(false)
 
   const [wishlistItems, setWishlistItems] = useState(
     JSON.parse(localStorage.getItem('wishlist')) || []
@@ -69,34 +69,59 @@ export function CartProvider({ children }) {
     }
   }
 
-  async function removeFromCart(cartItemId) {
+  async function removeFromCart(productId) {
+    setCartLoading(true)
     try {
-      const { data } = await axios.delete(
-        `${BASE}/cart/${cartItemId}`,
-        { headers: { token } }
-      )
+      const { data } = await axios.delete(`${BASE}/cart/${productId}`, {
+        headers: { token }
+      })
       setCartItems(data.data?.products || [])
       setCartCount(data.numOfCartItems || 0)
       setTotalPrice(data.data?.totalCartPrice || 0)
-      setCartId(data.data?._id)
+      return { success: true }
     } catch (err) {
       console.error('Remove error:', err.response?.data)
+      return { success: false, message: err.response?.data?.message }
+    } finally {
+      setCartLoading(false)
     }
   }
 
-  async function updateQuantity(cartItemId, count) {
-    if (count < 1) return removeFromCart(cartItemId)
+  async function updateQuantity(productId, count) {
+    if (count < 1) return removeFromCart(productId)
+    setCartLoading(true)
     try {
-      const { data } = await axios.put(
-        `${BASE}/cart/${cartItemId}`,
-        { count },
+      const { data } = await axios.put(`${BASE}/cart/${productId}`, 
+        { count }, 
         { headers: { token } }
       )
       setCartItems(data.data?.products || [])
       setCartCount(data.numOfCartItems || 0)
       setTotalPrice(data.data?.totalCartPrice || 0)
+      return { success: true }
     } catch (err) {
       console.error('Update error:', err.response?.data)
+      return { success: false, message: err.response?.data?.message }
+    } finally {
+      setCartLoading(false)
+    }
+  }
+
+  async function clearCart() {
+    setCartLoading(true)
+    try {
+      await axios.delete(`${BASE}/cart`, {
+        headers: { token }
+      })
+      setCartItems([])
+      setCartCount(0)
+      setTotalPrice(0)
+      return { success: true }
+    } catch (err) {
+      console.error('Clear error:', err.response?.data)
+      return { success: false, message: err.response?.data?.message }
+    } finally {
+      setCartLoading(false)
     }
   }
 
@@ -120,7 +145,7 @@ export function CartProvider({ children }) {
   return (
     <CartContext.Provider value={{
       cartItems, wishlistItems, cartCount, cartId, totalPrice, cartLoading,
-      addToCart, removeFromCart, updateQuantity, toggleWishlist,
+      addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist,
       isInWishlist, isInCart, fetchCart
     }}>
       {children}

@@ -1,136 +1,97 @@
 import { useCart } from '../../context/CartContext'
 import { useNavigate } from 'react-router-dom'
+import CartItem from './CartItem'
 
 export default function Cart() {
   const { 
-    cartItems, cartCount, totalPrice, cartId, cartLoading,
-    updateQuantity, removeFromCart 
+    cartItems, cartCount, totalPrice, cartLoading,
+    updateQuantity, removeFromCart, clearCart
   } = useCart()
   const navigate = useNavigate()
 
-  if (cartItems.length === 0) return (
-    <div className="min-h-screen flex flex-col items-center 
-      justify-center gap-4">
-      <i className="fa-solid fa-cart-shopping text-6xl text-gray-200"></i>
-      <p className="text-xl font-semibold text-gray-400">
-        Your cart is empty
-      </p>
+  if (cartItems.length === 0 && !cartLoading) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6 px-4 bg-gray-50/50">
+      <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center shadow-inner">
+        <i className="fa-solid fa-cart-shopping text-5xl text-gray-300"></i>
+      </div>
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-gray-800 mb-2">Your cart is empty</h2>
+        <p className="text-gray-500 max-w-xs mx-auto">
+          Look like you haven't added anything to your cart yet.
+        </p>
+      </div>
       <button onClick={() => navigate('/')}
-        className="px-6 py-2.5 bg-primary-600 text-white 
-          rounded-xl text-sm font-medium hover:bg-primary-700 
-          transition-colors">
-        Continue Shopping
+        className="px-8 py-3 bg-primary-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-primary-200 hover:bg-primary-700 hover:-translate-y-0.5 transition-all active:scale-95">
+        Start Shopping
       </button>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen bg-gray-50/50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          My Cart ({cartCount} items)
-        </h1>
+        
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+              My Cart
+            </h1>
+            <p className="text-gray-500 mt-1 font-medium">
+              You have {cartCount} items in your basket
+            </p>
+          </div>
+          <button 
+            onClick={clearCart}
+            disabled={cartLoading || cartItems.length === 0}
+            className="flex items-center gap-2 text-red-500 font-bold text-sm hover:bg-red-50 px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <i className="fa-solid fa-trash-can"></i>
+            Clear Cart
+          </button>
+        </div>
 
-        <div className="space-y-3 mb-6">
+        <div className="space-y-4 mb-8">
           {cartItems.map(item => (
-            <div key={item._id}
-              className="bg-white rounded-2xl border border-gray-100 
-                shadow-sm p-4 flex items-center gap-4">
-              <img src={item.product?.imageCover} alt={item.product?.title}
-                className="w-16 h-16 object-contain rounded-xl 
-                  border border-gray-100" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800 
-                  line-clamp-1">{item.product?.title}</p>
-                <p className="text-primary-600 font-bold text-sm mt-1">
-                  {item.price * item.count} EGP
-                </p>
-                <p className="text-xs text-gray-400">
-                  Qty: {item.count}
-                </p>
-
-                {/* Quantity Controls */}
-                <div className="flex items-center gap-2 mt-2">
-                  
-                  {/* Minus Button */}
-                  <button
-                    onClick={() => {
-                      if (item.count === 1) {
-                        removeFromCart(item._id)
-                      } else {
-                        updateQuantity(item._id, item.count - 1)
-                      }
-                    }}
-                    className="w-7 h-7 rounded-full border border-gray-200 
-                      flex items-center justify-center text-gray-600
-                      hover:bg-red-50 hover:text-red-500 hover:border-red-200
-                      transition-all duration-200 active:scale-90"
-                  >
-                    <i className="fa-solid fa-minus text-xs"></i>
-                  </button>
-
-                  {/* Count */}
-                  <span className="w-6 text-center text-sm font-bold text-gray-800">
-                    {item.count}
-                  </span>
-
-                  {/* Plus Button */}
-                  <button
-                    onClick={() => updateQuantity(item._id, item.count + 1)}
-                    className="w-7 h-7 rounded-full border border-gray-200 
-                      flex items-center justify-center text-gray-600
-                      hover:bg-primary-50 hover:text-primary-600 
-                      hover:border-primary-200
-                      transition-all duration-200 active:scale-90"
-                  >
-                    <i className="fa-solid fa-plus text-xs"></i>
-                  </button>
-
-                </div>
-              </div>
-              <button onClick={() => removeFromCart(item._id)}
-                className="w-8 h-8 rounded-full border border-gray-200 
-                  flex items-center justify-center text-gray-400 
-                  hover:bg-red-50 hover:text-red-500 hover:border-red-200
-                  transition-colors">
-                <i className="fa-solid fa-xmark text-xs"></i>
-              </button>
-            </div>
+            <CartItem 
+              key={item._id} 
+              item={item} 
+              updateQuantity={updateQuantity} 
+              removeFromCart={removeFromCart}
+              cartLoading={cartLoading}
+            />
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 
-          shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-gray-600 font-medium">Total</span>
-            <span className="text-2xl font-bold text-primary-600">
-              {totalPrice} EGP
-            </span>
-          </div>
-          <div className="space-y-3">
-            {/* Cash on Delivery */}
-            <button
-              onClick={() => navigate('/checkout/cash')}
-              className="w-full py-3 bg-primary-600 text-white 
-                rounded-xl font-semibold hover:bg-primary-700 
-                transition-all duration-300 active:scale-95
-                flex items-center justify-center gap-2"
-            >
-              <i className="fa-solid fa-money-bill-wave"></i>
-              Cash on Delivery
-            </button>
+        {/* Footer / Summary */}
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
+          <div className="p-6 sm:p-8 bg-gray-900 text-white">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-gray-400 font-medium">Total Price</span>
+              <span className="text-3xl font-black text-primary-400">
+                {totalPrice} <span className="text-sm">EGP</span>
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                onClick={() => navigate('/checkout/online')}
+                disabled={cartLoading}
+                className="w-full py-4 bg-primary-600 text-white rounded-2xl font-bold hover:bg-primary-700 shadow-lg shadow-primary-900/20 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+              >
+                <i className="fa-solid fa-credit-card"></i>
+                Checkout Online
+              </button>
 
-            {/* Pay Online */}
-            <button
-              onClick={() => navigate('/checkout/online')}
-              className="w-full py-3 bg-white border-2 border-primary-600 
-                text-primary-600 rounded-xl font-semibold 
-                hover:bg-primary-50 transition-all duration-300 
-                active:scale-95 flex items-center justify-center gap-2"
-            >
-              <i className="fa-solid fa-credit-card"></i>
-              Pay Online
-            </button>
+              <button
+                onClick={() => navigate('/checkout/cash')}
+                disabled={cartLoading}
+                className="w-full py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-bold border border-white/10 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+              >
+                <i className="fa-solid fa-money-bill-wave"></i>
+                Cash on Delivery
+              </button>
+            </div>
           </div>
         </div>
 
