@@ -8,8 +8,8 @@ const BASE = 'https://ecommerce.routemisr.com/api/v1'
 
 export default function Home() {
   const [products, setProducts] = useState([])
-  const [loading,  setLoading]  = useState(true)
-  const [error,    setError]    = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     axios.get(`${BASE}/products?limit=20`)
@@ -33,7 +33,7 @@ export default function Home() {
         <i className="fa-solid fa-circle-exclamation text-2xl"></i>
       </div>
       <p className="text-red-500 font-bold">{error}</p>
-      <button 
+      <button
         onClick={() => window.location.reload()}
         className="px-6 py-2 bg-white border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-colors"
       >
@@ -43,7 +43,7 @@ export default function Home() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50/50 py-12 px-6 lg:px-12">
+    <div className="min-h-screen bg-gray-50/50 md:py-12 px-6 lg:px-12">
       <div className="max-w-7xl mx-auto">
 
         {/* Hero Section with Luxurious Spacing */}
@@ -57,7 +57,7 @@ export default function Home() {
         </div>
 
         {/* Products Header */}
-        <div className="flex items-end justify-between mb-12 px-12">
+        <div className="flex items-end justify-between mb-12 ">
           <div>
             <span className="text-primary-600 font-black text-xs uppercase tracking-widest mb-2 block">
               Our Collection

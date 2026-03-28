@@ -28,6 +28,8 @@ import CheckoutOnline from "./pages/CheckoutOnline"
 import OrderSuccess from "./pages/OrderSuccess"
 import AllOrders from "./pages/AllOrders"
 import PlaceholderPage from "./pages/Placeholder/Placeholder"
+import About from "./pages/About/About"
+import Contact from "./pages/Contact/Contact"
 
 export const routes = [
     {
@@ -71,10 +73,12 @@ export const routes = [
             { path: 'searshProducts', element: <SearshProducts /> },
             { path: 'favorites', element: <ProtectedRoute><Favorites /></ProtectedRoute> },
             
+            // App Pages
+            { path: 'about', element: <About /> },
+            { path: 'contact', element: <Contact /> },
+            
             // Placeholders
             { path: 'track-order', element: <PlaceholderPage /> },
-            { path: 'about', element: <PlaceholderPage /> },
-            { path: 'contact', element: <PlaceholderPage /> },
             { path: 'logout', element: <PlaceholderPage /> },
             { path: '*', element: <NotFound /> },
         ],

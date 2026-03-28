@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import CartItem from './CartItem'
 
 export default function Cart() {
-  const { 
+  const {
     cartItems, cartCount, totalPrice, cartLoading,
     updateQuantity, removeFromCart, clearCart
   } = useCart()
@@ -30,7 +30,7 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-gray-50/50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -41,7 +41,7 @@ export default function Cart() {
               You have {cartCount} items in your basket
             </p>
           </div>
-          <button 
+          <button
             onClick={clearCart}
             disabled={cartLoading || cartItems.length === 0}
             className="flex items-center gap-2 text-red-500 font-bold text-sm hover:bg-red-50 px-4 py-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -53,10 +53,10 @@ export default function Cart() {
 
         <div className="space-y-4 mb-8">
           {cartItems.map(item => (
-            <CartItem 
-              key={item._id} 
-              item={item} 
-              updateQuantity={updateQuantity} 
+            <CartItem
+              key={item._id}
+              item={item}
+              updateQuantity={updateQuantity}
               removeFromCart={removeFromCart}
               cartLoading={cartLoading}
             />
@@ -72,7 +72,7 @@ export default function Cart() {
                 {totalPrice} <span className="text-sm">EGP</span>
               </span>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
                 onClick={() => navigate('/checkout/online')}

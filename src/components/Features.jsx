@@ -29,10 +29,10 @@ const Features = () => {
   ];
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16 px-12">
+    <section className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16 px-12">
       {features.map((f, i) => (
-        <div 
-          key={i} 
+        <div
+          key={i}
           className="group p-8 bg-white rounded-3xl border border-gray-100 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
         >
           <div className={`w-24 h-24 ${f.color} rounded-[2rem] flex items-center justify-center mb-8 mx-auto group-hover:rotate-6 transition-transform shadow-sm`}>

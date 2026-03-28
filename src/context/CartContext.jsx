@@ -91,8 +91,8 @@ export function CartProvider({ children }) {
     if (count < 1) return removeFromCart(productId)
     setCartLoading(true)
     try {
-      const { data } = await axios.put(`${BASE}/cart/${productId}`, 
-        { count }, 
+      const { data } = await axios.put(`${BASE}/cart/${productId}`,
+        { count },
         { headers: { token } }
       )
       setCartItems(data.data?.products || [])

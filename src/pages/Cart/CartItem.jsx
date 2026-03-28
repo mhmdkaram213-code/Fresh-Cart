@@ -6,10 +6,10 @@ const CartItem = ({ item, updateQuantity, removeFromCart, cartLoading }) => {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex justify-between items-center gap-4 hover:shadow-md transition-shadow">
-      
+
       {/* Product Information */}
       <div className="flex items-center gap-4 flex-1 min-w-0">
-        <div 
+        <div
           onClick={() => navigate(`/products/${item.product?._id}`)}
           className="w-20 h-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-xl border border-gray-50"
         >
@@ -19,9 +19,9 @@ const CartItem = ({ item, updateQuantity, removeFromCart, cartLoading }) => {
             className="w-full h-full object-contain hover:scale-110 transition-transform duration-300"
           />
         </div>
-        
+
         <div className="flex-1 min-w-0">
-          <h3 
+          <h3
             onClick={() => navigate(`/products/${item.product?._id}`)}
             className="text-sm font-bold text-gray-800 line-clamp-1 cursor-pointer hover:text-primary-600 transition-colors"
           >
@@ -41,7 +41,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, cartLoading }) => {
 
       {/* Controls & Actions */}
       <div className="flex items-center gap-6">
-        
+
         {/* Quantity Selector */}
         <div className="flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
           <button
